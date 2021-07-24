@@ -2,5 +2,13 @@ class Error(Exception):
     pass
 
 
-class CustomError(Error):
+class InvalidExtensionFileError(Error):
+    pass
+
+
+class InvalidFormattedFastaFileError(Error):
+    pass
+
+
+class InvalidNumberofArgumentsError(Error):
     pass
