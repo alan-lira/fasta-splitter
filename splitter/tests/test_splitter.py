@@ -159,6 +159,56 @@ def test_when_fasta_sequences_file_has_all_valid_lines_then_ok():
     temporary_sequences_file.unlink()
 
 
+def test_when_fasta_sequences_file_path_is_on_the_same_level_then_return_empty_path_underscored_string():
+    sequences_file_same_level_path_parents_underscored_expected = ""
+    temporary_sequences_file = Path("sequences.fasta")
+    with open(temporary_sequences_file, mode="w"):
+        pass
+    sequences_file_same_level_path_parents_returned = splitter.splitter \
+        .get_sequences_file_path_parents(temporary_sequences_file)
+    sequences_file_same_level_path_parents_underscored_returned = splitter.splitter \
+        .get_sequences_file_path_parents_underscored(sequences_file_same_level_path_parents_returned)
+    assert sequences_file_same_level_path_parents_underscored_returned \
+           == sequences_file_same_level_path_parents_underscored_expected
+    temporary_sequences_file.unlink()
+
+
+def test_when_fasta_sequences_file_path_is_one_level_below_then_return_path_underscored_string():
+    sequences_file_one_level_below_path_parents_underscored_expected = "ParentBelow"
+    temporary_sequences_directory_one_level_below = Path("ParentBelow")
+    temporary_sequences_directory_one_level_below.mkdir()
+    temporary_sequences_file = temporary_sequences_directory_one_level_below.joinpath("sequences.fasta")
+    with open(temporary_sequences_file, mode="w"):
+        pass
+    sequences_file_one_level_below_path_parents_returned = splitter.splitter \
+        .get_sequences_file_path_parents(temporary_sequences_file)
+    sequences_file_one_level_below_path_parents_underscored_returned = splitter.splitter \
+        .get_sequences_file_path_parents_underscored(sequences_file_one_level_below_path_parents_returned)
+    assert sequences_file_one_level_below_path_parents_underscored_returned \
+           == sequences_file_one_level_below_path_parents_underscored_expected
+    temporary_sequences_file.unlink()
+    temporary_sequences_directory_one_level_below.rmdir()
+
+
+def test_when_fasta_sequences_file_path_is_one_level_above_then_return_path_underscored_string():
+    sequences_file_one_level_above_path_parents_underscored_expected = \
+        str(Path.cwd().parent).replace("/", "_").replace("\\", "_") \
+        .replace(".", "").replace(":", "_").replace("_", "", 1) + "_ParentAbove"
+    temporary_sequences_directory_one_level_above = Path.cwd().parent.joinpath("ParentAbove")
+    temporary_sequences_directory_one_level_above.mkdir()
+    temporary_sequences_file = temporary_sequences_directory_one_level_above.joinpath("sequences.fasta")
+    with open(temporary_sequences_file, mode="w"):
+        pass
+    sequences_file_one_level_above_path_parents_returned = splitter.splitter \
+        .get_sequences_file_path_parents(temporary_sequences_file)
+    sequences_file_one_level_above_path_parents_underscored_returned = splitter.splitter \
+        .get_sequences_file_path_parents_underscored(sequences_file_one_level_above_path_parents_returned)
+    assert sequences_file_one_level_above_path_parents_underscored_returned \
+           == sequences_file_one_level_above_path_parents_underscored_expected
+    temporary_sequences_file.unlink()
+    temporary_sequences_directory_one_level_above.rmdir()
+
+
 def test_when_execute_split_command_without_sequences_file_path_argument_then_return_exit_error_code_one():
     runner = CliRunner()
     result = runner.invoke(splitter.splitter.splitter_group, ["split", ""])

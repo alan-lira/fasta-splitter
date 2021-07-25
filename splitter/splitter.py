@@ -109,6 +109,18 @@ def check_if_is_valid_fasta_sequences_file(sequences_file_path: Path) -> None:
     check_if_sequences_file_has_no_data(sequences_file_path, lines_count)
 
 
+def get_sequences_file_path_parents(sequences_file_path: Path) -> Path:
+    return Path(sequences_file_path.parents[0])
+
+
+def get_sequences_file_path_parents_underscored(sequences_file_path_parents: Path) -> str:
+    sequences_file_path_parents_underscored = str(sequences_file_path_parents) \
+        .replace("/", "_").replace("\\", "_").replace(".", "").replace(":", "")
+    if len(sequences_file_path_parents_underscored) > 0 and sequences_file_path_parents_underscored[0] == "_":
+        sequences_file_path_parents_underscored = sequences_file_path_parents_underscored.replace("_", "", 1)
+    return sequences_file_path_parents_underscored
+
+
 @click.group()
 def splitter_group() -> None:
     pass
@@ -124,6 +136,9 @@ def split(sequences_file_path: Path) -> None:
 
     # VALIDATE SEQUENCES FILE (AS FASTA FORMATTED FILE)
     check_if_is_valid_fasta_sequences_file(sequences_file_path)
+
+    # GET SEQUENCES FILE PATH PARENTS
+    sequences_file_path_parents = get_sequences_file_path_parents(sequences_file_path)
 
     # END
     sys.exit(0)
