@@ -18,7 +18,7 @@ Official Documentation on **[ReadTheDocs](https://fasta-splitter.readthedocs.io 
 |  |  |
 | ------ | ------ |
 | `Continuous Integration (GitHub Actions)` | [![Linux CI](https://github.com/alan-lira/fasta-splitter/actions/workflows/linux_ci.yml/badge.svg)](https://github.com/alan-lira/fasta-splitter/actions/workflows/linux_ci.yml) <br> [![macOS CI](https://github.com/alan-lira/fasta-splitter/actions/workflows/macos_ci.yml/badge.svg)](https://github.com/alan-lira/fasta-splitter/actions/workflows/macos_ci.yml) <br> [![Windows CI](https://github.com/alan-lira/fasta-splitter/actions/workflows/windows_ci.yml/badge.svg)](https://github.com/alan-lira/fasta-splitter/actions/workflows/windows_ci.yml) |
-| `Code Coverage (Codecov)` | [![codecov](https://codecov.io/gh/alan-lira/fasta-splitter/branch/master/graph/badge.svg)](https://codecov.io/gh/alan-lira/fasta-splitter) |
+| `Code Coverage (Codecov)` | [![codecov](https://codecov.io/gh/alan-lira/fasta-splitter/branch/main/graph/badge.svg)](https://codecov.io/gh/alan-lira/fasta-splitter) |
 | `Vulnerabilities (Snyk)` | [![Known Vulnerabilities](https://snyk.io/test/github/alan-lira/fasta-splitter/badge.svg)](https://snyk.io/test/github/alan-lira/fasta-splitter) |
 | `Maintainability (Code Climate)` | [![Maintainability](https://api.codeclimate.com/v1/badges/93ea9bc426ee119d0660/maintainability)](https://codeclimate.com/github/alan-lira/fasta-splitter/maintainability) |
 | `Documentation (Read the Docs)` | [![Documentation Status](https://readthedocs.org/projects/fasta-splitter/badge/?version=latest)](https://fasta-splitter.readthedocs.io/en/latest/?badge=latest) |
