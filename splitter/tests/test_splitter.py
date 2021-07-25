@@ -209,6 +209,20 @@ def test_when_fasta_sequences_file_path_is_one_level_above_then_return_path_unde
     temporary_sequences_directory_one_level_above.rmdir()
 
 
+def test_when_fasta_sequences_file_is_valid_then_return_sequences_name_list():
+    sequences_name_list_expected = ["Sequence1", "Sequence2", "Sequence3"]
+    temporary_sequences_file = Path("sequences.fasta")
+    with open(temporary_sequences_file, mode="w") as sequences_file:
+        sequences_file.write(">Sequence1|text1\nAAA\n")
+        sequences_file.write(">Sequence2 |text2\nCCC\n")
+        sequences_file.write(">Sequence3\nGGG\n")
+    sequences_name_list_returned = splitter.splitter \
+        .get_sequences_name_list(temporary_sequences_file)
+    for index in range(len(sequences_name_list_returned)):
+        assert sequences_name_list_returned[index] == sequences_name_list_expected[index]
+    temporary_sequences_file.unlink()
+
+
 def test_when_execute_split_command_without_sequences_file_path_argument_then_return_exit_error_code_one():
     runner = CliRunner()
     result = runner.invoke(splitter.splitter.splitter_group, ["split", ""])

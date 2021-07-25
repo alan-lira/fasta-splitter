@@ -121,6 +121,18 @@ def get_sequences_file_path_parents_underscored(sequences_file_path_parents: Pat
     return sequences_file_path_parents_underscored
 
 
+def get_sequences_name_list(sequences_file_path: Path) -> list:
+    sequences_start_token = ">"
+    sequences_name_list = []
+    with open(sequences_file_path, mode="r") as fasta_sequences_file:
+        for line in fasta_sequences_file:
+            line = line.strip()
+            if line.startswith(sequences_start_token):
+                sequence_name = line.split("|", 1)[0].replace(sequences_start_token, "").replace(" ", "")
+                sequences_name_list.append(sequence_name)
+    return sequences_name_list
+
+
 @click.group()
 def splitter_group() -> None:
     pass
@@ -139,6 +151,12 @@ def split(sequences_file_path: Path) -> None:
 
     # GET SEQUENCES FILE PATH PARENTS
     sequences_file_path_parents = get_sequences_file_path_parents(sequences_file_path)
+
+    # GET SEQUENCES FILE EXTENSION
+    sequences_file_extension = get_sequences_file_extension(sequences_file_path)
+
+    # READ SEQUENCES FILE AND GET SEQUENCES NAME LIST
+    sequences_name_list = get_sequences_name_list(sequences_file_path)
 
     # END
     sys.exit(0)
