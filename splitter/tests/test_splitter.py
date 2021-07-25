@@ -336,6 +336,106 @@ def test_when_fasta_sequences_file_is_valid_and_path_is_one_level_above_then_spl
     temporary_sequences_directory_one_level_above.rmdir()
 
 
+def test_when_fasta_sequences_file_path_is_on_the_same_level_then_write_sequences_list_file_to_disk():
+    sequences_list_file_expected = Path("Sequences_List.txt")
+    sequences_list_file_data_expected = ["Sequence1.fasta", "Sequence2.fasta", "Sequence3.fasta"]
+    temporary_sequences_file = Path("sequences.fasta")
+    with open(temporary_sequences_file, mode="w") as sequences_file:
+        sequences_file.write(">Sequence1|text1\nAAA\n")
+        sequences_file.write(">Sequence2 |text2\nCCC\n")
+        sequences_file.write(">Sequence3\nGGG\n")
+    sequences_file_same_level_path_parents_returned = splitter.splitter \
+        .get_sequences_file_path_parents(temporary_sequences_file)
+    sequences_file_extension_returned = splitter.splitter \
+        .get_sequences_file_extension(temporary_sequences_file)
+    sequences_name_list_returned = splitter.splitter \
+        .get_sequences_name_list(temporary_sequences_file)
+    splitter.splitter \
+        .write_sequences_fasta_files_index_list_text_file(sequences_file_same_level_path_parents_returned,
+                                                          sequences_file_extension_returned,
+                                                          sequences_name_list_returned)
+    assert sequences_list_file_expected.exists()
+    sequences_list_file_data_returned = []
+    with open(sequences_list_file_expected, mode="r") as sequences_list_file:
+        for line in sequences_list_file:
+            sequences_list_file_data_returned.append(line.strip())
+    for index in range(len(sequences_list_file_data_returned)):
+        assert sequences_list_file_data_returned[index] == sequences_list_file_data_expected[index]
+    sequences_list_file_expected.unlink()
+    temporary_sequences_file.unlink()
+
+
+def test_when_fasta_sequences_file_path_is_one_level_below_then_write_sequences_list_file_to_disk():
+    sequences_list_file_expected = Path("ParentBelow_Sequences_List.txt")
+    temporary_sequences_directory_one_level_below = Path("ParentBelow")
+    temporary_sequences_directory_one_level_below.mkdir()
+    sequences_list_file_data_expected = [str(temporary_sequences_directory_one_level_below.joinpath("Sequence1.fasta")),
+                                         str(temporary_sequences_directory_one_level_below.joinpath("Sequence2.fasta")),
+                                         str(temporary_sequences_directory_one_level_below.joinpath("Sequence3.fasta"))]
+    temporary_sequences_file = temporary_sequences_directory_one_level_below.joinpath("sequences.fasta")
+    with open(temporary_sequences_file, mode="w") as sequences_file:
+        sequences_file.write(">Sequence1|text1\nAAA\n")
+        sequences_file.write(">Sequence2 |text2\nCCC\n")
+        sequences_file.write(">Sequence3\nGGG\n")
+    sequences_file_one_level_below_path_parents_returned = splitter.splitter \
+        .get_sequences_file_path_parents(temporary_sequences_file)
+    sequences_file_extension_returned = splitter.splitter \
+        .get_sequences_file_extension(temporary_sequences_file)
+    sequences_name_list_returned = splitter.splitter \
+        .get_sequences_name_list(temporary_sequences_file)
+    splitter.splitter \
+        .write_sequences_fasta_files_index_list_text_file(sequences_file_one_level_below_path_parents_returned,
+                                                          sequences_file_extension_returned,
+                                                          sequences_name_list_returned)
+    assert sequences_list_file_expected.is_file()
+    sequences_list_file_data_returned = []
+    with open(sequences_list_file_expected, mode="r") as sequences_list_file:
+        for line in sequences_list_file:
+            sequences_list_file_data_returned.append(line.strip())
+    for index in range(len(sequences_list_file_data_returned)):
+        assert sequences_list_file_data_returned[index] == sequences_list_file_data_expected[index]
+    sequences_list_file_expected.unlink()
+    temporary_sequences_file.unlink()
+    temporary_sequences_directory_one_level_below.rmdir()
+
+
+def test_when_fasta_sequences_file_path_is_one_level_above_then_write_sequences_list_file_to_disk():
+    sequences_list_file_expected = Path.cwd().joinpath(str(Path.cwd().parent)
+                                                       .replace("/", "_").replace("\\", "_").replace(".", "")
+                                                       .replace(":", "_").replace("_", "", 1) + str(Path.cwd().suffix)
+                                                       + "_ParentAbove_Sequences_List.txt")
+    temporary_sequences_directory_one_level_above = Path.cwd().parent.joinpath("ParentAbove")
+    temporary_sequences_directory_one_level_above.mkdir()
+    sequences_list_file_data_expected = [str(temporary_sequences_directory_one_level_above.joinpath("Sequence1.fasta")),
+                                         str(temporary_sequences_directory_one_level_above.joinpath("Sequence2.fasta")),
+                                         str(temporary_sequences_directory_one_level_above.joinpath("Sequence3.fasta"))]
+    temporary_sequences_file = temporary_sequences_directory_one_level_above.joinpath("sequences.fasta")
+    with open(temporary_sequences_file, mode="w") as sequences_file:
+        sequences_file.write(">Sequence1|text1\nAAA\n")
+        sequences_file.write(">Sequence2 |text2\nCCC\n")
+        sequences_file.write(">Sequence3\nGGG\n")
+    sequences_file_one_level_above_path_parents_returned = splitter.splitter \
+        .get_sequences_file_path_parents(temporary_sequences_file)
+    sequences_file_extension_returned = splitter.splitter \
+        .get_sequences_file_extension(temporary_sequences_file)
+    sequences_name_list_returned = splitter.splitter \
+        .get_sequences_name_list(temporary_sequences_file)
+    splitter.splitter \
+        .write_sequences_fasta_files_index_list_text_file(sequences_file_one_level_above_path_parents_returned,
+                                                          sequences_file_extension_returned,
+                                                          sequences_name_list_returned)
+    assert sequences_list_file_expected.is_file()
+    sequences_list_file_data_returned = []
+    with open(sequences_list_file_expected, mode="r") as sequences_list_file:
+        for line in sequences_list_file:
+            sequences_list_file_data_returned.append(line.strip())
+    for index in range(len(sequences_list_file_data_returned)):
+        assert sequences_list_file_data_returned[index] == sequences_list_file_data_expected[index]
+    sequences_list_file_expected.unlink()
+    temporary_sequences_file.unlink()
+    temporary_sequences_directory_one_level_above.rmdir()
+
+
 def test_when_execute_split_command_without_sequences_file_path_argument_then_return_exit_error_code_one():
     runner = CliRunner()
     result = runner.invoke(splitter.splitter.splitter_group, ["split", ""])
@@ -349,6 +449,7 @@ def test_when_execute_split_command_with_sequences_file_path_argument_then_retur
     sequence1_file_expected = Path("Sequence1.fasta")
     sequence2_file_expected = Path("Sequence2.fasta")
     sequence3_file_expected = Path("Sequence3.fasta")
+    sequences_list_file_expected = Path("Sequences_List.txt")
     temporary_sequences_file = Path("sequences.fasta")
     with open(temporary_sequences_file, mode="w") as sequences_file:
         sequences_file.write(">Sequence1|text1\nAAA\n")
@@ -364,6 +465,7 @@ def test_when_execute_split_command_with_sequences_file_path_argument_then_retur
     sequence1_file_expected.unlink()
     sequence2_file_expected.unlink()
     sequence3_file_expected.unlink()
+    sequences_list_file_expected.unlink()
     temporary_sequences_file.unlink()
 
 
