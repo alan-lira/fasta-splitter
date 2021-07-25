@@ -133,6 +133,21 @@ def get_sequences_name_list(sequences_file_path: Path) -> list:
     return sequences_name_list
 
 
+def get_sequences_data_list(sequences_file_path: Path) -> list:
+    sequences_start_token = ">"
+    sequences_data_list = []
+    current_sequence_data = []
+    with open(sequences_file_path, mode="r") as sequences_file:
+        for line in sequences_file:
+            line = line.strip()
+            if line.startswith(sequences_start_token) and current_sequence_data:
+                sequences_data_list.append(current_sequence_data[:])
+                current_sequence_data = []
+            current_sequence_data.append(line)
+        sequences_data_list.append(current_sequence_data)
+    return sequences_data_list
+
+
 @click.group()
 def splitter_group() -> None:
     pass
@@ -157,6 +172,9 @@ def split(sequences_file_path: Path) -> None:
 
     # READ SEQUENCES FILE AND GET SEQUENCES NAME LIST
     sequences_name_list = get_sequences_name_list(sequences_file_path)
+
+    # READ SEQUENCES FILE AND GET SEQUENCES DATA LIST
+    sequences_data_list = get_sequences_data_list(sequences_file_path)
 
     # END
     sys.exit(0)

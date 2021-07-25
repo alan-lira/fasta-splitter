@@ -223,6 +223,20 @@ def test_when_fasta_sequences_file_is_valid_then_return_sequences_name_list():
     temporary_sequences_file.unlink()
 
 
+def test_when_fasta_sequences_file_is_valid_then_return_sequences_data_list():
+    sequences_data_list_expected = ["AAA", "CCC", "GGG"]
+    temporary_sequences_file = Path("sequences.fasta")
+    with open(temporary_sequences_file, mode="w") as sequences_file:
+        sequences_file.write(">Sequence1|text1\nAAA\n")
+        sequences_file.write(">Sequence2 |text2\nCCC\n")
+        sequences_file.write(">Sequence3\nGGG\n")
+    sequences_data_list_returned = splitter.splitter \
+        .get_sequences_data_list(temporary_sequences_file)
+    for index in range(len(sequences_data_list_returned)):
+        assert sequences_data_list_returned[index][1] == sequences_data_list_expected[index]
+    temporary_sequences_file.unlink()
+
+
 def test_when_execute_split_command_without_sequences_file_path_argument_then_return_exit_error_code_one():
     runner = CliRunner()
     result = runner.invoke(splitter.splitter.splitter_group, ["split", ""])
