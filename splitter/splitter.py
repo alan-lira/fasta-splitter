@@ -162,6 +162,22 @@ def write_sequences_fasta_files_from_sequences_lists(sequences_file_path_parents
         wrote_sequences_fasta_files_count = wrote_sequences_fasta_files_count + 1
 
 
+def write_sequences_fasta_files_index_list_text_file(sequences_file_path_parents: Path,
+                                                     sequences_file_extension: str,
+                                                     sequences_name_list: list) -> None:
+    sequences_file_path_parents_underscored = get_sequences_file_path_parents_underscored(sequences_file_path_parents)
+    if len(sequences_file_path_parents_underscored) > 0:
+        sequences_list_file_name = sequences_file_path_parents_underscored + "_Sequences_List.txt"
+    else:
+        sequences_list_file_name = "Sequences_List.txt"
+    sequences_fasta_files_index_count = 0
+    with open(Path(sequences_list_file_name), mode="w") as sequences_list_file:
+        for index_name in range(len(sequences_name_list)):
+            sequence_file_name = sequences_name_list[index_name] + sequences_file_extension
+            sequences_list_file.write(str(Path(sequences_file_path_parents, sequence_file_name)) + "\n")
+            sequences_fasta_files_index_count = sequences_fasta_files_index_count + 1
+
+
 @click.group()
 def splitter_group() -> None:
     pass
@@ -195,6 +211,11 @@ def split(sequences_file_path: Path) -> None:
                                                      sequences_file_extension,
                                                      sequences_name_list,
                                                      sequences_data_list)
+
+    # WRITE SEQUENCES FASTA FILES INDEX LIST (INDEX OF INDIVIDUAL SEQUENCES FILES)
+    write_sequences_fasta_files_index_list_text_file(sequences_file_path_parents,
+                                                     sequences_file_extension,
+                                                     sequences_name_list)
 
     # END
     sys.exit(0)
