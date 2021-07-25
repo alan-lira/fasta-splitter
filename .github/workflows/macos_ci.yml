@@ -30,7 +30,7 @@ jobs:
     - name: Run tests with pytest
       run: pytest
     - name: Run Tox
-      run: tox
+      run: tox -e py,pytest,coverage,codecov,build
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
       with:
