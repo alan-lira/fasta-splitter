@@ -148,6 +148,20 @@ def get_sequences_data_list(sequences_file_path: Path) -> list:
     return sequences_data_list
 
 
+def write_sequences_fasta_files_from_sequences_lists(sequences_file_path_parents: Path,
+                                                     sequences_file_extension: str,
+                                                     sequences_name_list: list,
+                                                     sequences_data_list: list) -> None:
+    wrote_sequences_fasta_files_count = 0
+    for index_name in range(len(sequences_name_list)):
+        sequence_file_name = sequences_name_list[index_name] + sequences_file_extension
+        with open(sequences_file_path_parents.joinpath(sequence_file_name), mode="w") as sequence_file:
+            sequence_data = sequences_data_list[index_name]
+            for index_data in range(len(sequence_data)):
+                sequence_file.write(sequence_data[index_data] + "\n")
+        wrote_sequences_fasta_files_count = wrote_sequences_fasta_files_count + 1
+
+
 @click.group()
 def splitter_group() -> None:
     pass
@@ -175,6 +189,12 @@ def split(sequences_file_path: Path) -> None:
 
     # READ SEQUENCES FILE AND GET SEQUENCES DATA LIST
     sequences_data_list = get_sequences_data_list(sequences_file_path)
+
+    # WRITE SEQUENCES FASTA FILES (SPLITTING ORIGINAL FASTA SEQUENCES FILE INTO INDIVIDUAL SEQUENCES FILES)
+    write_sequences_fasta_files_from_sequences_lists(sequences_file_path_parents,
+                                                     sequences_file_extension,
+                                                     sequences_name_list,
+                                                     sequences_data_list)
 
     # END
     sys.exit(0)
