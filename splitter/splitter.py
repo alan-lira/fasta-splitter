@@ -23,11 +23,15 @@ def get_sequences_file_extension(sequences_file_path: Path) -> str:
     return sequences_file_path.suffix
 
 
+def get_supported_fasta_file_extensions() -> list:
+    return [".fa", ".faa", ".fasta", ".ffn", ".fna", ".frn"]
+
+
 def check_if_sequences_file_has_fasta_extension(sequences_file_path: Path) -> None:
-    fasta_extension_types = [".fa", ".faa", ".fasta", ".ffn", ".fna", ".frn"]
-    if get_sequences_file_extension(sequences_file_path) not in fasta_extension_types:
+    supported_fasta_file_extensions = get_supported_fasta_file_extensions()
+    if get_sequences_file_extension(sequences_file_path) not in supported_fasta_file_extensions:
         invalid_extension_file_message = "Only FASTA extension files ({0}) are allowed!" \
-            .format(", ".join(fasta_extension_types))
+            .format(", ".join(supported_fasta_file_extensions))
         raise splitter.splitter_exceptions.InvalidExtensionFileError(invalid_extension_file_message)
 
 
@@ -162,9 +166,9 @@ def write_sequences_fasta_files_from_sequences_lists(sequences_file_path_parents
         wrote_sequences_fasta_files_count = wrote_sequences_fasta_files_count + 1
 
 
-def write_sequences_fasta_files_index_list_text_file(sequences_file_path_parents: Path,
-                                                     sequences_file_extension: str,
-                                                     sequences_name_list: list) -> None:
+def write_sequences_fasta_files_path_list(sequences_file_path_parents: Path,
+                                          sequences_file_extension: str,
+                                          sequences_name_list: list) -> None:
     sequences_file_path_parents_underscored = get_sequences_file_path_parents_underscored(sequences_file_path_parents)
     if len(sequences_file_path_parents_underscored) > 0:
         sequences_list_file_name = sequences_file_path_parents_underscored + "_Sequences_List.txt"
@@ -183,39 +187,58 @@ def splitter_group() -> None:
     pass
 
 
-@splitter_group.command("split", short_help="Split one multiple sequences file into individual sequences files.")
-@click.argument("sequences_file_path", nargs=1, type=Path, required=True)
-def split(sequences_file_path: Path) -> None:
+@splitter_group.command("split",
+                        short_help="Split one multiple sequences file into individual sequences files.")
+@click.argument("multiple_sequences_file_path",
+                nargs=1,
+                type=Path,
+                required=True)
+@click.option("--generate-path-list",
+              is_flag=True,
+              help="Generate a list containing location (path) of the splitted individual sequences files.")
+def split(multiple_sequences_file_path: Path,
+          generate_path_list: bool) -> None:
     """
     Split one multiple sequences fasta file into individual sequences fasta files.\n
+    1. Input:\n
+    1.1 MULTIPLE_SEQUENCES_FILE_PATH - Location (path) of the multiple sequences fasta source file to be splitted.\n
+    2. Output:\n
+    2.1 Sequences Files - Individual fasta files generated after running this split command.
+    They are saved in the same directory path where the multiple sequences fasta source file is located.\n
+    Notice that the multiple sequences fasta source file stays untouched.\n
+    2.2 Sequences Path File List [Optional] - List (.txt) containing the location (path)
+    of the splitted individual sequences files.
+    It is generated in the current directory path where the user ran this split command.\n
+    Use --generate-path-list option flag to activate this function.
     """
     # BEGIN
 
-    # VALIDATE SEQUENCES FILE (AS FASTA FORMATTED FILE)
-    check_if_is_valid_fasta_sequences_file(sequences_file_path)
+    # VALIDATE MULTIPLE SEQUENCES FILE (AS FASTA FORMATTED FILE)
+    check_if_is_valid_fasta_sequences_file(multiple_sequences_file_path)
 
-    # GET SEQUENCES FILE PATH PARENTS
-    sequences_file_path_parents = get_sequences_file_path_parents(sequences_file_path)
+    # GET MULTIPLE SEQUENCES FILE PATH PARENTS
+    sequences_file_path_parents = get_sequences_file_path_parents(multiple_sequences_file_path)
 
-    # GET SEQUENCES FILE EXTENSION
-    sequences_file_extension = get_sequences_file_extension(sequences_file_path)
+    # GET MULTIPLE SEQUENCES FILE EXTENSION
+    sequences_file_extension = get_sequences_file_extension(multiple_sequences_file_path)
 
-    # READ SEQUENCES FILE AND GET SEQUENCES NAME LIST
-    sequences_name_list = get_sequences_name_list(sequences_file_path)
+    # READ MULTIPLE SEQUENCES FILE AND GET SEQUENCES NAME LIST
+    sequences_name_list = get_sequences_name_list(multiple_sequences_file_path)
 
-    # READ SEQUENCES FILE AND GET SEQUENCES DATA LIST
-    sequences_data_list = get_sequences_data_list(sequences_file_path)
+    # READ MULTIPLE SEQUENCES FILE AND GET SEQUENCES DATA LIST
+    sequences_data_list = get_sequences_data_list(multiple_sequences_file_path)
 
-    # WRITE SEQUENCES FASTA FILES (SPLITTING ORIGINAL FASTA SEQUENCES FILE INTO INDIVIDUAL SEQUENCES FILES)
+    # WRITE SEQUENCES FASTA FILES (SPLITTING ORIGINAL FASTA MULTIPLE SEQUENCES FILE INTO INDIVIDUAL SEQUENCES FILES)
     write_sequences_fasta_files_from_sequences_lists(sequences_file_path_parents,
                                                      sequences_file_extension,
                                                      sequences_name_list,
                                                      sequences_data_list)
 
-    # WRITE SEQUENCES FASTA FILES INDEX LIST (INDEX OF INDIVIDUAL SEQUENCES FILES)
-    write_sequences_fasta_files_index_list_text_file(sequences_file_path_parents,
-                                                     sequences_file_extension,
-                                                     sequences_name_list)
+    if generate_path_list:
+        # WRITE INDIVIDUAL SEQUENCES FASTA FILES PATH LIST (LOCATION OF INDIVIDUAL SEQUENCES FILES)
+        write_sequences_fasta_files_path_list(sequences_file_path_parents,
+                                              sequences_file_extension,
+                                              sequences_name_list)
 
     # END
     sys.exit(0)
