@@ -50,9 +50,9 @@ def test_when_sequences_file_does_not_have_fasta_extension_then_throws_invalid_e
         pass
     with pytest.raises(splitter.splitter_exceptions.InvalidExtensionFileError) as pytest_wrapped_e:
         splitter.splitter.check_if_sequences_file_has_fasta_extension(temporary_sequences_file)
-    fasta_extension_types = [".fa", ".faa", ".fasta", ".ffn", ".fna", ".frn"]
+    supported_fasta_file_extensions = splitter.splitter.get_supported_fasta_file_extensions()
     invalid_extension_file_message = "Only FASTA extension files ({0}) are allowed!" \
-        .format(", ".join(fasta_extension_types))
+        .format(", ".join(supported_fasta_file_extensions))
     assert pytest_wrapped_e.type == splitter.splitter_exceptions.InvalidExtensionFileError
     assert str(pytest_wrapped_e.value) == invalid_extension_file_message
     temporary_sequences_file.unlink()
@@ -351,9 +351,9 @@ def test_when_fasta_sequences_file_path_is_on_the_same_level_then_write_sequence
     sequences_name_list_returned = splitter.splitter \
         .get_sequences_name_list(temporary_sequences_file)
     splitter.splitter \
-        .write_sequences_fasta_files_index_list_text_file(sequences_file_same_level_path_parents_returned,
-                                                          sequences_file_extension_returned,
-                                                          sequences_name_list_returned)
+        .write_sequences_fasta_files_path_list(sequences_file_same_level_path_parents_returned,
+                                               sequences_file_extension_returned,
+                                               sequences_name_list_returned)
     assert sequences_list_file_expected.exists()
     sequences_list_file_data_returned = []
     with open(sequences_list_file_expected, mode="r") as sequences_list_file:
@@ -384,9 +384,9 @@ def test_when_fasta_sequences_file_path_is_one_level_below_then_write_sequences_
     sequences_name_list_returned = splitter.splitter \
         .get_sequences_name_list(temporary_sequences_file)
     splitter.splitter \
-        .write_sequences_fasta_files_index_list_text_file(sequences_file_one_level_below_path_parents_returned,
-                                                          sequences_file_extension_returned,
-                                                          sequences_name_list_returned)
+        .write_sequences_fasta_files_path_list(sequences_file_one_level_below_path_parents_returned,
+                                               sequences_file_extension_returned,
+                                               sequences_name_list_returned)
     assert sequences_list_file_expected.is_file()
     sequences_list_file_data_returned = []
     with open(sequences_list_file_expected, mode="r") as sequences_list_file:
@@ -421,9 +421,9 @@ def test_when_fasta_sequences_file_path_is_one_level_above_then_write_sequences_
     sequences_name_list_returned = splitter.splitter \
         .get_sequences_name_list(temporary_sequences_file)
     splitter.splitter \
-        .write_sequences_fasta_files_index_list_text_file(sequences_file_one_level_above_path_parents_returned,
-                                                          sequences_file_extension_returned,
-                                                          sequences_name_list_returned)
+        .write_sequences_fasta_files_path_list(sequences_file_one_level_above_path_parents_returned,
+                                               sequences_file_extension_returned,
+                                               sequences_name_list_returned)
     assert sequences_list_file_expected.is_file()
     sequences_list_file_data_returned = []
     with open(sequences_list_file_expected, mode="r") as sequences_list_file:
@@ -445,7 +445,29 @@ def test_when_execute_split_command_without_sequences_file_path_argument_then_re
     assert str(result.exception) == "FASTA sequences file not found!"
 
 
-def test_when_execute_split_command_with_sequences_file_path_argument_then_return_successful_exit_code_zero():
+def test_when_execute_split_command_with_just_sequences_file_path_then_return_successful_exit_code_zero():
+    sequence1_file_expected = Path("Sequence1.fasta")
+    sequence2_file_expected = Path("Sequence2.fasta")
+    sequence3_file_expected = Path("Sequence3.fasta")
+    temporary_sequences_file = Path("sequences.fasta")
+    with open(temporary_sequences_file, mode="w") as sequences_file:
+        sequences_file.write(">Sequence1|text1\nAAA\n")
+        sequences_file.write(">Sequence2 |text2\nCCC\n")
+        sequences_file.write(">Sequence3\nGGG\n")
+    runner = CliRunner()
+    result = runner.invoke(splitter.splitter.splitter_group,
+                           ["split", str(temporary_sequences_file)])
+    assert result.return_value is None
+    assert result.exit_code == 0
+    assert result.exc_info[0] == SystemExit
+    assert result.exception is None
+    sequence1_file_expected.unlink()
+    sequence2_file_expected.unlink()
+    sequence3_file_expected.unlink()
+    temporary_sequences_file.unlink()
+
+
+def test_when_execute_split_command_with_sequences_file_and_generate_list_path_then_return_successful_exit_code_zero():
     sequence1_file_expected = Path("Sequence1.fasta")
     sequence2_file_expected = Path("Sequence2.fasta")
     sequence3_file_expected = Path("Sequence3.fasta")
@@ -457,7 +479,7 @@ def test_when_execute_split_command_with_sequences_file_path_argument_then_retur
         sequences_file.write(">Sequence3\nGGG\n")
     runner = CliRunner()
     result = runner.invoke(splitter.splitter.splitter_group,
-                           ["split", str(temporary_sequences_file)])
+                           ["split", str(temporary_sequences_file), "--generate-path-list"])
     assert result.return_value is None
     assert result.exit_code == 0
     assert result.exc_info[0] == SystemExit
