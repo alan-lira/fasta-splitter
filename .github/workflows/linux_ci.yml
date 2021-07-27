@@ -28,7 +28,7 @@ jobs:
           pip install -r REQUIREMENTS
         fi
     - name: Run tests with pytest
-      run: pytest
+      run: pytest -v -s
     - name: Run Tox
       run: tox -e py,pytest,coverage,codecov,build
     - name: Upload coverage to Codecov

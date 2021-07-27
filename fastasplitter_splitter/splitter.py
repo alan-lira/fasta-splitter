@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Tuple
 import click
-import splitter.splitter_exceptions
+import fastasplitter_splitter.splitter_exceptions
 import sys
 
 
@@ -10,7 +10,8 @@ def check_if_is_valid_number_of_arguments(number_of_arguments_provided: int) -> 
         invalid_number_of_arguments_message = "Invalid number of arguments provided!\n" \
                                               "Expected: 1 argument (FASTA multiple sequences file).\n" \
                                               "Provided: {0} argument(s).".format(number_of_arguments_provided)
-        raise splitter.splitter_exceptions.InvalidNumberofArgumentsError(invalid_number_of_arguments_message)
+        raise fastasplitter_splitter.splitter_exceptions \
+            .InvalidNumberofArgumentsError(invalid_number_of_arguments_message)
 
 
 def check_if_multiple_sequences_file_exists(multiple_sequences_file_path: Path) -> None:
@@ -32,7 +33,7 @@ def check_if_multiple_sequences_file_has_fasta_extension(multiple_sequences_file
     if get_multiple_sequences_file_extension(multiple_sequences_file_path) not in supported_fasta_file_extensions:
         invalid_extension_file_message = "Only FASTA extension files ({0}) are allowed!" \
             .format(", ".join(supported_fasta_file_extensions))
-        raise splitter.splitter_exceptions.InvalidExtensionFileError(invalid_extension_file_message)
+        raise fastasplitter_splitter.splitter_exceptions.InvalidExtensionFileError(invalid_extension_file_message)
 
 
 def parse_description_line(line: str,
@@ -43,10 +44,23 @@ def parse_description_line(line: str,
     return description_lines_count
 
 
+def description_line_contains_whitespace_right_after_start_token(line: str,
+                                                                 individual_sequences_start_token: str) -> bool:
+    return line.startswith(individual_sequences_start_token) and \
+           line.split(" ", 1)[0] == individual_sequences_start_token
+
+
+def description_line_has_no_information_after_start_token(line: str,
+                                                          individual_sequences_start_token: str) -> bool:
+    return line.startswith(individual_sequences_start_token) and \
+           line.split(individual_sequences_start_token, 1)[1] == ""
+
+
 def parse_invalid_description_line(line: str,
                                    individual_sequences_start_token: str,
                                    invalid_description_lines_count: int) -> int:
-    if line.startswith(individual_sequences_start_token) and line.split(" ", 1)[0] == individual_sequences_start_token:
+    if description_line_contains_whitespace_right_after_start_token(line, individual_sequences_start_token) or \
+            description_line_has_no_information_after_start_token(line, individual_sequences_start_token):
         invalid_description_lines_count = invalid_description_lines_count + 1
     return invalid_description_lines_count
 
@@ -85,7 +99,8 @@ def check_if_multiple_sequences_file_has_any_description_line(multiple_sequences
     if description_lines_count == 0:
         invalid_formatted_fasta_file_message = "'{0}' does not have any description line!" \
             .format(str(multiple_sequences_file_path))
-        raise splitter.splitter_exceptions.InvalidFormattedFastaFileError(invalid_formatted_fasta_file_message)
+        raise fastasplitter_splitter.splitter_exceptions \
+            .InvalidFormattedFastaFileError(invalid_formatted_fasta_file_message)
 
 
 def check_if_multiple_sequences_file_has_any_invalid_description_line(multiple_sequences_file_path: Path,
@@ -93,7 +108,8 @@ def check_if_multiple_sequences_file_has_any_invalid_description_line(multiple_s
     if invalid_description_lines_count != 0:
         invalid_formatted_fasta_file_message = "'{0}' contains {1} line(s) with invalid description format!" \
             .format(str(multiple_sequences_file_path), str(invalid_description_lines_count))
-        raise splitter.splitter_exceptions.InvalidFormattedFastaFileError(invalid_formatted_fasta_file_message)
+        raise fastasplitter_splitter.splitter_exceptions \
+            .InvalidFormattedFastaFileError(invalid_formatted_fasta_file_message)
 
 
 def check_if_multiple_sequences_file_has_no_data(multiple_sequences_file_path: Path,
@@ -101,7 +117,8 @@ def check_if_multiple_sequences_file_has_no_data(multiple_sequences_file_path: P
     if lines_count < 2:
         invalid_formatted_fasta_file_message = "'{0}' seems a empty fasta file!"\
             .format(str(multiple_sequences_file_path))
-        raise splitter.splitter_exceptions.InvalidFormattedFastaFileError(invalid_formatted_fasta_file_message)
+        raise fastasplitter_splitter.splitter_exceptions \
+            .InvalidFormattedFastaFileError(invalid_formatted_fasta_file_message)
 
 
 def check_if_is_valid_multiple_sequences_file(multiple_sequences_file_path: Path) -> None:
@@ -237,6 +254,7 @@ def split(multiple_sequences_file_path: Path,
     2. Output:\n
     2.1 Individual Sequences Files - Individual sequences fasta files generated after running split command.
     They are saved in the same path where the multiple sequences fasta source file is located.
+    Their names are determined by the information stated before pipe symbol (|) in their description lines.
     Notice that the multiple sequences fasta source file stays untouched after split command execution.\n
     2.2 Individual Sequences Path List Text File [Optional] - List containing the location (path)
     of the resulting individual sequences fasta files.
