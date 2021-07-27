@@ -199,8 +199,8 @@ def write_individual_sequences_files_path_list(multiple_sequences_file_path_pare
     if len(multiple_sequences_file_path_parents_underscored) > 0:
         individual_sequences_files_path_list_file_prefix_name = multiple_sequences_file_path_parents_underscored + "_"
     individual_sequences_files_path_list_file_name = \
-        individual_sequences_files_path_list_file_prefix_name + "Sequences_List.txt"
-    individual_sequences_files_path_list_file_path = Path(individual_sequences_files_path_list_file_name)
+        individual_sequences_files_path_list_file_prefix_name + "Sequences_Path_List.txt"
+    individual_sequences_files_path_list_file_path = Path.cwd().joinpath(individual_sequences_files_path_list_file_name)
     sequences_fasta_files_index_count = 0
     with open(individual_sequences_files_path_list_file_path,
               mode="w") as individual_sequences_files_path_list_file_name:
@@ -212,17 +212,20 @@ def write_individual_sequences_files_path_list(multiple_sequences_file_path_pare
     return individual_sequences_files_path_list_file_path
 
 
-def print_split_details(multiple_sequences_file_path: Path,
+def print_split_details(multiple_sequences_file_full_path: Path,
                         individual_sequences_read_count: int,
                         individual_sequences_files_written_count: int,
+                        individual_sequences_files_path: Path,
                         individual_sequences_files_path_list_file_path: Path) -> None:
     split_details_message = "Multiple sequences file (source): {0}\n" \
-                            "Individual sequences read from source: {1}\n" \
-                            "Individual sequences files written to disk: {2}\n" \
-                            "Individual sequences files path list: {3}" \
-        .format(str(multiple_sequences_file_path),
+                            "Number of individual sequences read from source: {1}\n" \
+                            "Number of individual sequences files written to disk: {2}\n" \
+                            "Location of individual sequences files: {3}\n" \
+                            "Individual sequences files path list file: {4}" \
+        .format(str(multiple_sequences_file_full_path),
                 str(individual_sequences_read_count),
                 str(individual_sequences_files_written_count),
+                str(individual_sequences_files_path),
                 str(individual_sequences_files_path_list_file_path))
     print(split_details_message)
 
@@ -258,11 +261,13 @@ def split(multiple_sequences_file_path: Path,
     Notice that the multiple sequences fasta source file stays untouched after split command execution.\n
     2.2 Individual Sequences Path List Text File [Optional] - List containing the location (path)
     of the resulting individual sequences fasta files.
+    Its name is determined by multiple sequences fasta source file location.
     It is generated in the current path where the user ran split command.\n
     Use --generate-path-list option flag to activate this function.\n
     2.3 Splitting Details [Optional] - Show details of split command execution:
     multiple sequences fasta source file location, number of individual sequences read from source file,
-    number of individual sequences files written to disk and sequences path list file location (if generated).\n
+    number of individual sequences files written to disk, individual sequences files location
+    and individual sequences files path list file location (if generated).\n
     Use --verbose option flag to activate this function.\n
     """
     # BEGIN
@@ -299,10 +304,13 @@ def split(multiple_sequences_file_path: Path,
 
     if verbose:
         # SHOW DETAILS ABOUT RUNNING THIS SPLIT COMMAND
+        multiple_sequences_file_full_path = Path.cwd().joinpath(multiple_sequences_file_path)
         individual_sequences_read_count = len(individual_sequences_name_list)
-        print_split_details(multiple_sequences_file_path,
+        individual_sequences_files_path = Path.cwd().joinpath(multiple_sequences_file_path_parents)
+        print_split_details(multiple_sequences_file_full_path,
                             individual_sequences_read_count,
                             individual_sequences_files_written_count,
+                            individual_sequences_files_path,
                             individual_sequences_files_path_list_file_path)
 
     # END
