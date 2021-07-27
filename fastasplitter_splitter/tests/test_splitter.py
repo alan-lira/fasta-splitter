@@ -272,6 +272,7 @@ def test_when_multiple_sequences_file_is_valid_and_path_is_on_the_same_level_the
     sequence1_file_expected = Path("Sequence1.fasta")
     sequence2_file_expected = Path("Sequence2.fasta")
     sequence3_file_expected = Path("Sequence3.fasta")
+    individual_sequences_files_written_count_expected = 3
     temporary_multiple_sequences_file = Path("sequences.fasta")
     with open(temporary_multiple_sequences_file, mode="w") as multiple_sequences_file:
         multiple_sequences_file.write(">Sequence1|text1\nAAA\n")
@@ -285,11 +286,12 @@ def test_when_multiple_sequences_file_is_valid_and_path_is_on_the_same_level_the
         .get_individual_sequences_name_list(temporary_multiple_sequences_file)
     individual_sequences_data_list_returned = fastasplitter_splitter.splitter \
         .get_individual_sequences_data_list(temporary_multiple_sequences_file)
-    fastasplitter_splitter.splitter \
+    individual_sequences_files_written_count_returned = fastasplitter_splitter.splitter \
         .write_individual_sequences_files(multiple_sequences_file_same_level_path_parents_returned,
                                           multiple_sequences_file_extension_returned,
                                           individual_sequences_name_list_returned,
                                           individual_sequences_data_list_returned)
+    assert individual_sequences_files_written_count_returned == individual_sequences_files_written_count_expected
     assert sequence1_file_expected.exists()
     assert sequence2_file_expected.exists()
     assert sequence3_file_expected.exists()
@@ -303,6 +305,7 @@ def test_when_multiple_sequences_file_is_valid_and_path_is_one_level_below_then_
     sequence1_file_expected = Path.cwd().joinpath("ParentBelow").joinpath("Sequence1.fasta")
     sequence2_file_expected = Path.cwd().joinpath("ParentBelow").joinpath("Sequence2.fasta")
     sequence3_file_expected = Path.cwd().joinpath("ParentBelow").joinpath("Sequence3.fasta")
+    individual_sequences_files_written_count_expected = 3
     temporary_directory_one_level_below = Path("ParentBelow")
     temporary_directory_one_level_below.mkdir()
     temporary_multiple_sequences_file = temporary_directory_one_level_below.joinpath("sequences.fasta")
@@ -318,11 +321,12 @@ def test_when_multiple_sequences_file_is_valid_and_path_is_one_level_below_then_
         .get_individual_sequences_name_list(temporary_multiple_sequences_file)
     individual_sequences_data_list_returned = fastasplitter_splitter.splitter \
         .get_individual_sequences_data_list(temporary_multiple_sequences_file)
-    fastasplitter_splitter.splitter \
+    individual_sequences_files_written_count_returned = fastasplitter_splitter.splitter \
         .write_individual_sequences_files(multiple_sequences_file_one_level_below_path_parents_returned,
                                           multiple_sequences_file_extension_returned,
                                           individual_sequences_name_list_returned,
                                           individual_sequences_data_list_returned)
+    assert individual_sequences_files_written_count_returned == individual_sequences_files_written_count_expected
     assert sequence1_file_expected.exists()
     assert sequence2_file_expected.exists()
     assert sequence3_file_expected.exists()
@@ -337,6 +341,7 @@ def test_when_multiple_sequences_file_is_valid_and_path_is_one_level_above_then_
     sequence1_file_expected = Path.cwd().parent.joinpath("ParentAbove").joinpath("Sequence1.fasta")
     sequence2_file_expected = Path.cwd().parent.joinpath("ParentAbove").joinpath("Sequence2.fasta")
     sequence3_file_expected = Path.cwd().parent.joinpath("ParentAbove").joinpath("Sequence3.fasta")
+    individual_sequences_files_written_count_expected = 3
     temporary_directory_one_level_above = Path.cwd().parent.joinpath("ParentAbove")
     temporary_directory_one_level_above.mkdir()
     temporary_multiple_sequences_file = temporary_directory_one_level_above.joinpath("sequences.fasta")
@@ -352,11 +357,12 @@ def test_when_multiple_sequences_file_is_valid_and_path_is_one_level_above_then_
         .get_individual_sequences_name_list(temporary_multiple_sequences_file)
     individual_sequences_data_list_returned = fastasplitter_splitter.splitter \
         .get_individual_sequences_data_list(temporary_multiple_sequences_file)
-    fastasplitter_splitter.splitter \
+    individual_sequences_files_written_count_returned = fastasplitter_splitter.splitter \
         .write_individual_sequences_files(multiple_sequences_file_one_level_above_path_parents_returned,
                                           multiple_sequences_file_extension_returned,
                                           individual_sequences_name_list_returned,
                                           individual_sequences_data_list_returned)
+    assert individual_sequences_files_written_count_returned == individual_sequences_files_written_count_expected
     assert sequence1_file_expected.exists()
     assert sequence2_file_expected.exists()
     assert sequence3_file_expected.exists()
@@ -368,7 +374,9 @@ def test_when_multiple_sequences_file_is_valid_and_path_is_one_level_above_then_
 
 
 def test_when_multiple_sequences_file_path_is_on_the_same_level_then_write_sequences_path_list_file_to_disk():
-    individual_sequences_path_list_file_expected = Path("Sequences_List.txt")
+    individual_sequences_path_list_file_expected = Path("Sequences_Path_List.txt")
+    individual_sequences_files_path_list_file_path_expected = \
+        Path.cwd().joinpath(individual_sequences_path_list_file_expected)
     individual_sequences_path_list_file_data_expected = ["Sequence1.fasta", "Sequence2.fasta", "Sequence3.fasta"]
     temporary_multiple_sequences_file = Path("sequences.fasta")
     with open(temporary_multiple_sequences_file, mode="w") as multiple_sequences_file:
@@ -381,10 +389,12 @@ def test_when_multiple_sequences_file_path_is_on_the_same_level_then_write_seque
         .get_multiple_sequences_file_extension(temporary_multiple_sequences_file)
     individual_sequences_name_list_returned = fastasplitter_splitter.splitter \
         .get_individual_sequences_name_list(temporary_multiple_sequences_file)
-    fastasplitter_splitter.splitter \
+    individual_sequences_files_path_list_file_path_returned = fastasplitter_splitter.splitter \
         .write_individual_sequences_files_path_list(multiple_sequences_file_same_level_path_parents_returned,
                                                     multiple_sequences_file_extension_returned,
                                                     individual_sequences_name_list_returned)
+    assert individual_sequences_files_path_list_file_path_returned \
+           == individual_sequences_files_path_list_file_path_expected
     assert individual_sequences_path_list_file_expected.exists()
     individual_sequences_path_list_file_data_returned = []
     with open(individual_sequences_path_list_file_expected, mode="r") as individual_sequences_files_path_list_file:
@@ -398,7 +408,9 @@ def test_when_multiple_sequences_file_path_is_on_the_same_level_then_write_seque
 
 
 def test_when_multiple_sequences_file_path_is_one_level_below_then_write_sequences_path_list_file_to_disk():
-    individual_sequences_path_list_file_expected = Path("ParentBelow_Sequences_List.txt")
+    individual_sequences_path_list_file_expected = Path("ParentBelow_Sequences_Path_List.txt")
+    individual_sequences_files_path_list_file_path_expected = \
+        Path.cwd().joinpath(individual_sequences_path_list_file_expected)
     temporary_directory_one_level_below = Path("ParentBelow")
     temporary_directory_one_level_below.mkdir()
     individual_sequences_path_list_file_data_expected = \
@@ -416,10 +428,12 @@ def test_when_multiple_sequences_file_path_is_one_level_below_then_write_sequenc
         .get_multiple_sequences_file_extension(temporary_multiple_sequences_file)
     individual_sequences_name_list_returned = fastasplitter_splitter.splitter \
         .get_individual_sequences_name_list(temporary_multiple_sequences_file)
-    fastasplitter_splitter.splitter \
+    individual_sequences_files_path_list_file_path_returned = fastasplitter_splitter.splitter \
         .write_individual_sequences_files_path_list(multiple_sequences_file_one_level_below_path_parents_returned,
                                                     multiple_sequences_file_extension_returned,
                                                     individual_sequences_name_list_returned)
+    assert individual_sequences_files_path_list_file_path_returned \
+           == individual_sequences_files_path_list_file_path_expected
     assert individual_sequences_path_list_file_expected.is_file()
     individual_sequences_path_list_file_data_returned = []
     with open(individual_sequences_path_list_file_expected, mode="r") as individual_sequences_files_path_list_file:
@@ -437,7 +451,9 @@ def test_when_multiple_sequences_file_path_is_one_level_above_then_write_sequenc
     individual_sequences_path_list_file_expected = Path.cwd() \
         .joinpath(str(Path.cwd().parent)
                   .replace("/", "_").replace("\\", "_").replace(".", "").replace(":", "_").replace("_", "", 1)
-                  + str(Path.cwd().suffix) + "_ParentAbove_Sequences_List.txt")
+                  + str(Path.cwd().suffix) + "_ParentAbove_Sequences_Path_List.txt")
+    individual_sequences_files_path_list_file_path_expected = \
+        Path.cwd().joinpath(individual_sequences_path_list_file_expected)
     temporary_directory_one_level_above = Path.cwd().parent.joinpath("ParentAbove")
     temporary_directory_one_level_above.mkdir()
     individual_sequences_path_list_file_data_expected = \
@@ -455,10 +471,12 @@ def test_when_multiple_sequences_file_path_is_one_level_above_then_write_sequenc
         .get_multiple_sequences_file_extension(temporary_multiple_sequences_file)
     individual_sequences_name_list_returned = fastasplitter_splitter.splitter \
         .get_individual_sequences_name_list(temporary_multiple_sequences_file)
-    fastasplitter_splitter.splitter \
+    individual_sequences_files_path_list_file_path_returned = fastasplitter_splitter.splitter \
         .write_individual_sequences_files_path_list(multiple_sequences_file_one_level_above_path_parents_returned,
                                                     multiple_sequences_file_extension_returned,
                                                     individual_sequences_name_list_returned)
+    assert individual_sequences_files_path_list_file_path_returned \
+           == individual_sequences_files_path_list_file_path_expected
     assert individual_sequences_path_list_file_expected.is_file()
     individual_sequences_path_list_file_data_returned = []
     with open(individual_sequences_path_list_file_expected, mode="r") as individual_sequences_files_path_list_file:
@@ -507,7 +525,7 @@ def test_when_execute_split_command_with_sequences_file_and_generate_list_paths_
     sequence1_file_expected = Path("Sequence1.fasta")
     sequence2_file_expected = Path("Sequence2.fasta")
     sequence3_file_expected = Path("Sequence3.fasta")
-    individual_sequences_files_path_list_file_expected = Path("Sequences_List.txt")
+    individual_sequences_files_path_list_file_expected = Path("Sequences_Path_List.txt")
     temporary_multiple_sequences_file = Path("sequences.fasta")
     with open(temporary_multiple_sequences_file, mode="w") as multiple_sequences_file:
         multiple_sequences_file.write(">Sequence1|text1\nAAA\n")
@@ -531,12 +549,13 @@ def test_when_execute_split_command_with_sequences_file_path_and_verbose_then_re
     sequence1_file_expected = Path("Sequence1.fasta")
     sequence2_file_expected = Path("Sequence2.fasta")
     sequence3_file_expected = Path("Sequence3.fasta")
-    split_details_message_expected = "Multiple sequences file (source): {0}\n" \
-                                     "Individual sequences read from source: {1}\n" \
-                                     "Individual sequences files written to disk: {2}\n" \
-                                     "Individual sequences files path list: {3}" \
-        .format("sequences.fasta", "3", "3", "None\n")
     temporary_multiple_sequences_file = Path("sequences.fasta")
+    split_details_message_expected = "Multiple sequences file (source): {0}\n" \
+                                     "Number of individual sequences read from source: {1}\n" \
+                                     "Number of individual sequences files written to disk: {2}\n" \
+                                     "Location of individual sequences files: {3}\n" \
+                                     "Individual sequences files path list file: {4}" \
+        .format(str(Path.cwd().joinpath(temporary_multiple_sequences_file)), "3", "3", str(Path.cwd()), "None\n")
     with open(temporary_multiple_sequences_file, mode="w") as multiple_sequences_file:
         multiple_sequences_file.write(">Sequence1|text1\nAAA\n")
         multiple_sequences_file.write(">Sequence2 |text2\nCCC\n")
