@@ -87,4 +87,4 @@ setup(name="fasta-splitter",
       packages=find_packages(),
       include_package_data=True,
       install_requires=get_requirements_list(),
-      entry_points={"console_scripts": ["fastasplitter=main:main_group"]})
+      entry_points={"console_scripts": ["fastasplitter=fastasplitter_cli.main:main_group"]})
